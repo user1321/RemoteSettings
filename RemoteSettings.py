@@ -15,11 +15,13 @@ from tempfile import mkstemp
 from shutil import move
 from os import fdopen, remove
 from time import sleep
+import threading
 
 WFBCSettingsFile = "/boot/wifibroadcast-1.txt"
 OSDSettingsFile = "/boot/osdconfig.txt"
 JoystickSettingsFile = "/boot/joyconfig.txt"
 IPAndroidClient = ""
+IsPhoneThredRunning = 0
 
 ConfigResp = bytearray(b'ConfigResp')
 RequestAllSettings = bytearray(b'RequestAllSettings')
@@ -230,6 +232,11 @@ def ForwardMessageToRPiAir(VarName):
 def WaitForRPiAirACK():
     print("ack")
 
+def PhoneConnected():
+    print("Phone connected. Say Hello to Air unit.")
+    for i in range(60):
+        SendDataToWFBC("PhoneConnected")
+	sleep(1)
 
 
 UDP_IP = ""
@@ -244,6 +251,10 @@ while True:
     print("ip: ", IPAndroidClient)    
     if data == RequestAllSettings:
         SendAllSettingToPhone()
+        if IsPhoneThredRunning == 0:
+            IsPhoneThredRunning = 1
+            threading.Thread(target=PhoneConnected)
+
     if RequestChangeSettings in data:
         DataStr = data.decode('utf-8')
         parts = DataStr.split(RequestChangeSettings.decode('utf-8') )
