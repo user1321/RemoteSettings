@@ -8,7 +8,7 @@ import sys
 import fileinput
 import socket
 import re
-
+import threading
 
 import subprocess
 from subprocess import call
@@ -21,6 +21,9 @@ from time import sleep
 WFBCSettingsFile = "/boot/wifibroadcast-1.txt"
 OSDSettingsFile = "/boot/osdconfig.txt"
 JoystickSettingsFile = "/boot/joyconfig.txt"
+IsTerminateRemoteSettingsPath = "/tmp/IsTerminateRemoteSettingsPath.txt"
+TerminateTimeOut = 0
+IsPhoneConnected = 0
 
 IPAndroidClient = ""
 
@@ -30,6 +33,7 @@ RequestChangeSettings = bytearray(b'RequestChangeSettings')
 RequestChangeOSD = bytearray(b'RequestChangeOSD')
 RequestChangeJoystick = bytearray(b'RequestChangeJoystick')
 RequestChangeTxPower = bytearray(b'RequestChangeTxPower')
+RequestPhoneConnected = bytearray(b'PhoneConnected')
 
 
 wbc_settings_blacklist = [""]
@@ -233,11 +237,43 @@ def SendACKToGround(VarName):
     SendDataToWFBC(VarName)
 
 
+def NoPhoneDetected():
+    for i in range(TerminateTimeOut):
+        sleep(1);
+    if IsPhoneConnected == 0:
+        print("NoPhoneDetected")
+        for x in range(5):
+            SendDataToWFBC("RemoteSettingsTerminated")
+            sleep(0.25)
+        hFile = open(IsTerminateRemoteSettingsPath,"w")
+        hFile.write("1")
+        hFile.close()
+        os.system('/home/pi/RemoteSettings/TerminateRemoteSettingsAir.sh')
+        sys.exit(1)
+
+def PhoneConnected():
+    global IsPhoneConnected
+    IsPhoneConnected = 1
 
 UDP_IP = ""
 UDP_PORT = 9393
 sock = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
 sock.bind((UDP_IP, UDP_PORT))
+
+
+if len(sys.argv) >= 2:
+    InParam = sys.argv[1]
+    if InParam != "0":
+        if InParam.isnumeric() == 1:
+            print("Terminate function enabled, timeout = ", InParam)
+            try:
+                TerminateTimeOut = int(InParam)
+                tHandler = threading.Thread(target=NoPhoneDetected)
+                tHandler.start()
+            except ValueError:
+                print("TimeOut to int except")
+else:
+    print("Terminate function disabled")
 
 while True:
     data, addr = sock.recvfrom(1024) # buffer size is 1024 bytes
@@ -246,6 +282,8 @@ while True:
     print("ip: ", IPAndroidClient)    
     if data == RequestAllSettings:
         SendAllSettingToPhone()
+    if data == RequestPhoneConnected:
+        PhoneConnected()
     if RequestChangeSettings in data:
         DataStr = data.decode('utf-8')
         parts = DataStr.split(RequestChangeSettings.decode('utf-8') )
