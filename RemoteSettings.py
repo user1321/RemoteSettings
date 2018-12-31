@@ -253,7 +253,8 @@ while True:
         SendAllSettingToPhone()
         if IsPhoneThredRunning == 0:
             IsPhoneThredRunning = 1
-            threading.Thread(target=PhoneConnected)
+            tHandler = threading.Thread(target=PhoneConnected)
+            tHandler.start()
 
     if RequestChangeSettings in data:
         DataStr = data.decode('utf-8')
