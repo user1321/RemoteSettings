@@ -236,7 +236,7 @@ def PhoneConnected():
     print("Phone connected. Say Hello to Air unit.")
     for i in range(60):
         SendDataToWFBC("PhoneConnected")
-	sleep(1)
+        sleep(1)
 
 
 UDP_IP = ""
