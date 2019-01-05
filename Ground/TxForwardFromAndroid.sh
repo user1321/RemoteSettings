@@ -26,11 +26,11 @@ do
 	echo "start wfb_tx -u 9090 -p 90 $NICS_LIST  (forward msg from android phone. UDP port 9090.\n"
 
     	if [ "$EncryptionOrRange" == "Range" ]; then
-		./wfb_tx -m 10 -u 9090 -t 2 -p 90 -B 20 -M 0 $NICS_LIST
+		./wfb_tx -u 9090 -t 2 -p 90 -B 20 -M 0 $NICS_LIST
     	fi
 
     	if [ "$EncryptionOrRange" == "Encryption" ]; then
-            ./wfb_tx -m 10 -u 9090 -t 0 -p 90 -B 20 -M 0 $NICS_LIST
+            ./wfb_tx -u 9090 -t 0 -p 90 -B 20 -M 0 $NICS_LIST
     	fi
 
 	NICS_LIST=`ls /sys/class/net/ | nice grep -v eth0 | nice grep -v lo | nice grep -v usb | nice grep -v intwifi | nice grep -v wlan | nice grep -v relay | nice grep -v wifihotspot`
