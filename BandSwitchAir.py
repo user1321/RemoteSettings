@@ -92,7 +92,7 @@ def StartRecv():
             print("InMsgBand5\n")
             if SwitchLocalBandTo(PrimaryCardPath,5) == True:
                 os.system('/home/pi/RemoteSettings/KillRaspivid.sh')
-                os.system('/dev/shm/startReadCameraTransfer_5.sh &')
+                os.system('/dev/shm/startReadCameraTransfer_5.sh')
             lock.acquire()
             CurrentBand = "5"
             lock.release()
@@ -100,7 +100,7 @@ def StartRecv():
             print("InMsgBand10\n")
             if SwitchLocalBandTo(PrimaryCardPath,10) == True:
                 os.system('/home/pi/RemoteSettings/KillRaspivid.sh')
-                os.system('/dev/shm/startReadCameraTransfer_10.sh &')
+                os.system('/dev/shm/startReadCameraTransfer_10.sh')
             lock.acquire()
             CurrentBand = "a"
             lock.release()
@@ -108,7 +108,7 @@ def StartRecv():
             print("InMsgBand20\n")
             if SwitchLocalBandTo(PrimaryCardPath,20) == True:
                 os.system('/home/pi/RemoteSettings/KillRaspivid.sh')
-                os.system('/dev/shm/startReadCameraTransfer.sh &')
+                os.system('/dev/shm/startReadCameraTransfer.sh')
             lock.acquire()
             CurrentBand = "0"
             lock.release()

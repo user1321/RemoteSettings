@@ -10,4 +10,4 @@ sleep 0.5
 sleep 0.5
 /home/pi/RemoteSettings/Ground/RxForwardToBandSwitcher.sh &
 sleep 0.5
-python3.5 /home/pi/RemoteSettings/BandSwitch.py -PrimaryCardMAC a0f3c12c1e23 -SlaveCardMAC 00156d826529
+/home/pi/RemoteSettings/Ground/BandSwitcher.sh &

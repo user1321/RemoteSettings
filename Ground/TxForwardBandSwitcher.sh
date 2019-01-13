@@ -21,16 +21,11 @@ cd /home/pi/cameracontrol/IPCamera/svpcom_wifibroadcast/
 
 while true
 do
-	echo "start wfb_tx -u 9090 -p 90 $NICS_LIST  (forward msg from android phone. UDP port 9090.\n"
+	echo "start wfb_tx -u 4321 -t 2 -p 57 -B 20 -M 0 $PrimaryCardMAC  (BandSwitcher\n"
 
     	if [ "$EncryptionOrRange" == "Range" ]; then
-		./wfb_tx -u 9090 -t 2 -p 90 -B 20 -M 0 $PrimaryCardMAC
+		./wfb_tx -k 1 -n 1 -u 4321 -t 2 -p 42 -B 20 -M 0 $PrimaryCardMAC
     	fi
 
-    	if [ "$EncryptionOrRange" == "Encryption" ]; then
-            ./wfb_tx -u 9090 -t 0 -p 90 -B 20 -M 0 $PrimaryCardMAC
-    	fi
-
-	echo "start wfb_tx -u 9090 -p 90 down. Restating with:  $PrimaryCardMAC \n"
 	sleep 2
 done

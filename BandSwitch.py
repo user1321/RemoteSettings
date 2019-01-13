@@ -31,10 +31,20 @@ RC_Value = 0
 parser = argparse.ArgumentParser()
 parser.add_argument("-PrimaryCardMAC", help="")
 parser.add_argument("-SlaveCardMAC", help="")
+parser.add_argument("-Band5Below", type=int, help="")
+parser.add_argument("-Band10ValueMin", type=int, help="")
+parser.add_argument("-Band10ValueMax", type=int, help="")
+parser.add_argument("-Band20After", type=int, help="")
+
+
 args = parser.parse_args()
 
 PrimaryCardMAC = args.PrimaryCardMAC
 SlaveCardMAC = args.SlaveCardMAC
+Band5Below = args.Band5Below
+Band10ValueMin = args.Band10ValueMin
+Band10ValueMax = args.Band10ValueMax
+Band20After = args.Band20After
 
 
 def SendDataToAir(MessageBuf):
@@ -56,7 +66,6 @@ def StartRCThreadIn():
         RC_Value = int.from_bytes( byteArr, byteorder='big')
         lock.release()
 
-
 def StartRecvThread():
     global AirBand
     UDP_IP = ""
@@ -66,7 +75,7 @@ def StartRecvThread():
 
     while True:
         data, addr = sock.recvfrom(1024) # buffer size is 1024 bytes
-
+        print( "Data: " + str(data) )
         if data == InMsgBand5:
             print("InMsgBand5\n")
             lock.acquire()
@@ -205,17 +214,17 @@ if FindCardPhyInitPath() == True:
     CurrentBand = 20
     #Add command line in code
     while True:
-        if RC_Value >= 1600 and CurrentBand != 20 and RC_Value != 0:
+        if RC_Value >= Band20After and CurrentBand != 20 and RC_Value != 0:
             print("Switching to 20...")
             SwitchRemoteLocalBandTo(20)
             CurrentBand = 20
 
-        if RC_Value < 1600 and RC_Value > 1200 and CurrentBand != 10 and RC_Value != 0:
+        if RC_Value < Band10ValueMax and RC_Value > Band10ValueMin and CurrentBand != 10 and RC_Value != 0:
             print("Switching to 10...")
             SwitchRemoteLocalBandTo(10)
             CurrentBand = 10
 
-        if RC_Value <= 1200 and CurrentBand != 5 and RC_Value != 0:
+        if RC_Value <= Band5Below and CurrentBand != 5 and RC_Value != 0:
             print("Switching to 5...")
             SwitchRemoteLocalBandTo(5)
             CurrentBand = 5
