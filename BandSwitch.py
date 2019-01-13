@@ -26,7 +26,7 @@ PrimaryCardPath = "Non"
 SlaveCardPath = "Non"
 PrimaryCardMAC = "Non"
 SlaveCardMAC = "Non"
-
+RC_Value = 0
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-PrimaryCardMAC", help="")
@@ -42,6 +42,19 @@ def SendDataToAir(MessageBuf):
     sockToAir = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
     sockToAir.sendto( bytes(MessageBuf,'utf-8'), ('127.0.0.1', UDP_PORT))
 
+def StartRCThreadIn():
+    global RC_Value
+    UDP_IP = ""
+    UDP_PORT = 1258
+    sock = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
+    sock.bind((UDP_IP, UDP_PORT))
+
+    while True:
+        data, addr = sock.recvfrom(1024) # buffer size is 1024 bytes
+        byteArr = bytearray([data[1], data[0]])
+        lock.acquire()
+        RC_Value = int.from_bytes( byteArr, byteorder='big')
+        lock.release()
 
 
 def StartRecvThread():
@@ -139,10 +152,12 @@ def SwitchRemoteLocalBandTo(band):
     switched = 0
     while switched == 0:  #In case of error try to switch again
         if SwitchLocalBandTo(PrimaryCardPath, band) == True:
+            print("Switch local true")
             switched = 1
         else:
             sleep(0.5)
 
+    print("Done. ")
     return True
 
 
@@ -179,19 +194,33 @@ def FindCardPhyInitPath():
 
 
 
-
-
-
-
-
 if FindCardPhyInitPath() == True:
     print("Ok")
     RecvThread = threading.Thread(target=StartRecvThread)
     RecvThread.start()
 
-    #Add command line in code
+    RC_UDP_IN_thread = threading.Thread(target=StartRCThreadIn)
+    RC_UDP_IN_thread.start()
 
-    SwitchRemoteLocalBandTo(5)
+    CurrentBand = 20
+    #Add command line in code
+    while True:
+        if RC_Value >= 1600 and CurrentBand != 20 and RC_Value != 0:
+            print("Switching to 20...")
+            SwitchRemoteLocalBandTo(20)
+            CurrentBand = 20
+
+        if RC_Value < 1600 and RC_Value > 1200 and CurrentBand != 10 and RC_Value != 0:
+            print("Switching to 10...")
+            SwitchRemoteLocalBandTo(10)
+            CurrentBand = 10
+
+        if RC_Value <= 1200 and CurrentBand != 5 and RC_Value != 0:
+            print("Switching to 5...")
+            SwitchRemoteLocalBandTo(5)
+            CurrentBand = 5
+        sleep(0.6)
+
 else:
     print("Flase")
 

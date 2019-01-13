@@ -90,19 +90,25 @@ def StartRecv():
         data, addr = sock.recvfrom(1024) # buffer size is 1024 bytes
         if data == InMsgBand5:
             print("InMsgBand5\n")
-            SwitchLocalBandTo(PrimaryCardPath,5)
+            if SwitchLocalBandTo(PrimaryCardPath,5) == True:
+                os.system('/home/pi/RemoteSettings/KillRaspivid.sh')
+                os.system('/dev/shm/startReadCameraTransfer_5.sh &')
             lock.acquire()
             CurrentBand = "5"
             lock.release()
         if data == InMsgBand10:
             print("InMsgBand10\n")
-            SwitchLocalBandTo(PrimaryCardPath,10)
+            if SwitchLocalBandTo(PrimaryCardPath,10) == True:
+                os.system('/home/pi/RemoteSettings/KillRaspivid.sh')
+                os.system('/dev/shm/startReadCameraTransfer_10.sh &')
             lock.acquire()
             CurrentBand = "a"
             lock.release()
         if data == InMsgBand20:
             print("InMsgBand20\n")
-            SwitchLocalBandTo(PrimaryCardPath,20)
+            if SwitchLocalBandTo(PrimaryCardPath,20) == True:
+                os.system('/home/pi/RemoteSettings/KillRaspivid.sh')
+                os.system('/dev/shm/startReadCameraTransfer.sh &')
             lock.acquire()
             CurrentBand = "0"
             lock.release()
