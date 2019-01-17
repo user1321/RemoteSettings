@@ -35,6 +35,7 @@ parser.add_argument("-Band5Below", type=int, help="")
 parser.add_argument("-Band10ValueMin", type=int, help="")
 parser.add_argument("-Band10ValueMax", type=int, help="")
 parser.add_argument("-Band20After", type=int, help="")
+parser.add_argument("-DefaultBandWidthAth9k", type=int, help="")
 
 
 args = parser.parse_args()
@@ -45,6 +46,7 @@ Band5Below = args.Band5Below
 Band10ValueMin = args.Band10ValueMin
 Band10ValueMax = args.Band10ValueMax
 Band20After = args.Band20After
+CurrentBand = args.DefaultBandWidthAth9k
 
 
 def SendDataToAir(MessageBuf):
@@ -211,7 +213,6 @@ if FindCardPhyInitPath() == True:
     RC_UDP_IN_thread = threading.Thread(target=StartRCThreadIn)
     RC_UDP_IN_thread.start()
 
-    CurrentBand = 20
     #Add command line in code
     while True:
         if RC_Value >= Band20After and CurrentBand != 20 and RC_Value != 0:
