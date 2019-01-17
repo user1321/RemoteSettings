@@ -23,7 +23,7 @@ while true
 do
 	echo "start wfb_tx -u 4321 -t 2 -p 57 -B 20 -M 0 $PrimaryCardMAC  (BandSwitcher\n"
 
-    	if [ "$EncryptionOrRange" == "Range" ]; then
+    	if [ "$EncryptionOrRange" == "RangeAth9k" ]; then
 		./wfb_tx -k 1 -n 1 -u 4321 -t 2 -p 42 -B 20 -M 0 $PrimaryCardMAC
     	fi
 
