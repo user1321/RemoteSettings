@@ -14,16 +14,30 @@ from tempfile import mkstemp
 from shutil import move
 from os import fdopen, remove
 from time import sleep
+import argparse
 import threading
-
 lock = threading.Lock()
+
+
+parser = argparse.ArgumentParser()
+parser.add_argument("-DefaultBandWidthAth9k", type=int, help="")
+args = parser.parse_args()
+tmp = args.DefaultBandWidthAth9k
+CurrentBand = "0"
+if tmp == 20:
+    CurrentBand="0"
+elif tmp == 10:
+    CurrentBand="a"
+elif tmp == 5:
+    CurrentBand="5"
+else:
+    CurrentBand = "0"
 
 
 InMsgBand5 = bytearray(b'5') #Air to 5
 InMsgBand10 = bytearray(b'a') #Air to 10
 InMsgBand20 = bytearray(b'0') #Air to 20
 PrimaryCardPath = "Non"
-CurrentBand = "20"
 
 def SendDataToGround(MessageBuf):
     UDP_PORT = 8943
