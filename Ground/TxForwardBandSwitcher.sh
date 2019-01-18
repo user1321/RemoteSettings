@@ -19,13 +19,21 @@ fi
 
 cd /home/pi/cameracontrol/IPCamera/svpcom_wifibroadcast/
 
-while true
-do
-	echo "start wfb_tx -u 4321 -t 2 -p 57 -B 20 -M 0 $PrimaryCardMAC  (BandSwitcher\n"
+if [ "$PrimaryCardMAC" == "0" ]; then
+	echo "PrimaryCardMAC must be configured \n"		
+else
+	while true
+	do
+		echo "start wfb_tx -u 4321 -t 2 -p 57 -B 20 -M 0 $PrimaryCardMAC  (BandSwitcher uplink)"
 
-    	if [ "$EncryptionOrRange" == "RangeAth9k" ]; then
-		./wfb_tx -k 1 -n 1 -u 4321 -t 2 -p 42 -B 20 -M 0 $PrimaryCardMAC
-    	fi
+    		if [ "$EncryptionOrRange" == "Range" ]; then
+			./wfb_tx -k 1 -n 1 -u 4321 -t 2 -p 42 -B 20 -M 0 $PrimaryCardMAC
+		else
+			echo "EncryptionOrRange must be set to Range to work with BandSwitcher\n"
+    		fi
+		sleep 2
+	done		
+fi
 
-	sleep 2
-done
+
+
